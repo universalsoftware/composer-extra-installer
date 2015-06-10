@@ -1,0 +1,21 @@
+{
+    "name": "unvsoft/composer-extra-installer",
+    "type": "composer-plugin",
+    "description": "Composer Plugin for installing OS specific dependencies",
+    "keywords": ["composer", "plugin" ],
+    "homepage": "https://github.com/universalsoftware/composer-extra-installer",
+    "license": "MIT",
+    "require": {
+        "composer-plugin-api": "1.0.0"
+    },
+    "extra": {
+        "class": "UnvSoft\\ComposerExtraInstaller\\Plugin"
+    },
+    "autoload": {
+        "psr-4": {
+            "UnvSoft\\ComposerExtraInstaller\\": "UnvSoft/ComposerExtraInstaller"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
