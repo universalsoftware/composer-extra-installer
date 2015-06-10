@@ -16,6 +16,7 @@ use Composer\DependencyResolver\Operation\UninstallOperation;
  * Class Plugin
  *
  * @TODO: add dependency package resolves. Now only specified package will be installed
+ * @TODO: add processing packages version  like ~1.4 or 1.2.*@dev. Now dev-master or specific version supported.
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
@@ -59,18 +60,23 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function onPostUpdateInstall(Event $event)
     {
         $extra = $event->getComposer()->getPackage()->getExtra();
+
+        $installDev = !$this->isNoDevOption();
+        $isWin = $this->isWinOs();
         $packagesList = array();
+        $prefix = "extra-require";
+        foreach (array("", "-dev") as $dev) {
+            foreach (array("", "-win", "-unix") as $os) {
+                $option = $prefix . $dev . $os;
+                if (!isset($extra[$option])
+                    || ($dev && !$installDev)
+                    || ($os == "-win" && !$isWin)
+                ) {
+                    continue;
+                }
 
-        if (isset($extra["extra-dev"])) {
-            $packagesList = array_merge($packagesList, $extra["extra-dev"]);
-        }
-
-        if (isset($extra["extra-dev-win"]) && $this->isWinOs()) {
-            $packagesList = array_merge($packagesList, $extra["extra-dev-win"]);
-        }
-		
-		if (isset($extra["extra-dev-unix"]) && !$this->isWinOs()) {
-            $packagesList = array_merge($packagesList, $extra["extra-dev-unix"]);
+                $packagesList = array_merge($packagesList, $extra[$option]);
+            }
         }
 
         $this->removeUnusedPackages($packagesList);
@@ -194,5 +200,15 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     private function isWinOs()
     {
         return DIRECTORY_SEPARATOR === "\\";
+    }
+
+    /**
+     * Return is --no-dev option specified in command line
+     *
+     * @return  bool    TRUE if --no-dev specified, FALSE otherwise
+     */
+    private function isNoDevOption()
+    {
+        return in_array("--no-dev", $_SERVER["argv"]);
     }
 }
