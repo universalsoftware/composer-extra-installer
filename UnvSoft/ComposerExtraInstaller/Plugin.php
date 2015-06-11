@@ -61,7 +61,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $extra = $event->getComposer()->getPackage()->getExtra();
 
-        $installDev = !$this->isNoDevOption();
+        $installDev = $event->isDevMode();
         $isWin = $this->isWinOs();
         $packagesList = array();
         $prefix = "extra-require";
@@ -200,15 +200,5 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     private function isWinOs()
     {
         return DIRECTORY_SEPARATOR === "\\";
-    }
-
-    /**
-     * Return is --no-dev option specified in command line
-     *
-     * @return  bool    TRUE if --no-dev specified, FALSE otherwise
-     */
-    private function isNoDevOption()
-    {
-        return in_array("--no-dev", $_SERVER["argv"]);
     }
 }
