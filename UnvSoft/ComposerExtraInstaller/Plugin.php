@@ -15,8 +15,8 @@ use Composer\DependencyResolver\Operation\UninstallOperation;
 /**
  * Class Plugin
  *
- * @TODO: add dependency package resolves. Now only specified package will be installed
- * @TODO: add processing packages version  like ~1.4 or 1.2.*@dev. Now dev-master or specific version supported.
+ * @todo add dependency package resolves. Now only specified package will be installed
+ * @todo add processing packages version  like ~1.4 or 1.2.*@dev. Now dev-master or specific version supported.
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
