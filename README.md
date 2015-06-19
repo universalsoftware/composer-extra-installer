@@ -1,9 +1,13 @@
 ## Composer Plugin for installing extra dependencies
 
 This composer plugin installs extra dependencies like fixtures, or OS specified packages.
+
 It's usefull, if you want install specific packages only for Windows or a many binary packages. 
 
 This plugin install only specified packages, and won't download package dependencies.
+
+This plugin will not add specified packages to autoload, there for section `autoload` not working.
+
 
 ### Example usage
 

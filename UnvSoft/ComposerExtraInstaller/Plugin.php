@@ -17,6 +17,7 @@ use Composer\DependencyResolver\Operation\UninstallOperation;
  *
  * @todo add dependency package resolves. Now only specified package will be installed
  * @todo add processing packages version  like ~1.4 or 1.2.*@dev. Now dev-master or specific version supported.
+ * @todo add autoload working for specified package.
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
