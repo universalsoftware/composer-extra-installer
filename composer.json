@@ -6,7 +6,7 @@
     "homepage": "https://github.com/universalsoftware/composer-extra-installer",
     "license": "MIT",
     "require": {
-        "composer-plugin-api": "^1.0"
+        "composer-plugin-api": "^1.0,^2.0"
     },
     "extra": {
         "class": "UnvSoft\\ComposerExtraInstaller\\Plugin"
