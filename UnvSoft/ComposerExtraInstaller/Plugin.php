@@ -123,7 +123,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-        $localRepo->write();
+        $localRepo->write(true, $installationManager);
     }
 
 
@@ -160,7 +160,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-        $localRepo->write();
+        $localRepo->write(true, $installationManager);
     }
 
     /**
