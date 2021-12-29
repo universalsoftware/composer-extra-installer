@@ -11,6 +11,8 @@ use Composer\Script\Event;
 use Composer\Repository\InstalledFilesystemRepository;
 use Composer\DependencyResolver\Operation\InstallOperation;
 use Composer\DependencyResolver\Operation\UninstallOperation;
+use Composer\Downloader\FileDownloader;
+use Composer\Factory;
 
 /**
  * Class Plugin
@@ -23,6 +25,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 {
     protected $composer;
     protected $io;
+    protected $config;
+    protected $downloader;
 
     private $localRepo = null;
     private $repositoryManager = null;
@@ -34,6 +38,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $this->composer = $composer;
         $this->io = $io;
+        $this->config = $composer->getConfig();
+
+        $rfs = Factory::createHttpDownloader($this->io, $this->config);
+
+        $this->downloader = new FileDownloader($io, $this->config, $rfs);
     }
     
     /**
@@ -41,6 +50,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function deactivate(Composer $composer, IOInterface $io)
     {
+        $this->composer = $composer;
+        $this->io = $io;
     }
     
     /**
@@ -48,6 +59,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function uninstall(Composer $composer, IOInterface $io)
     {
+        $this->composer = $composer;
+        $this->io = $io;
     }
 
     /**
@@ -94,9 +107,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-        $this->removeUnusedPackages($packagesList);
+        $this->removeUnusedPackages($packagesList, $installDev);
         if (!empty($packagesList)) {
-            $this->installPackages($packagesList);
+            $this->installPackages($packagesList, $installDev);
         }
     }
 
@@ -107,7 +120,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      *
      * @return  void
      */
-    protected function installPackages($packagesList)
+    protected function installPackages($packagesList, $installDev)
     {
         $installationManager = $this->composer->getInstallationManager();
         $installationManager->disablePlugins();
@@ -116,14 +129,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         foreach ($packagesList as $packageName => $packageVersion) {
             $package = $this->findPackage($packageName, $packageVersion);
             if (!$installationManager->isPackageInstalled($localRepo, $package)) {
-                $installationManager->install(
+                $installationManager->execute(
                     $localRepo,
-                    new InstallOperation($package)
+                    [new InstallOperation($package)]
                 );
             }
         }
 
-        $localRepo->write(true, $installationManager);
+        $localRepo->write($installDev, $installationManager);
     }
 
 
@@ -133,7 +146,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @param $packagesList     array of packages, where key is package name, and value is version
      *
      */
-    protected function removeUnusedPackages($packagesList)
+    protected function removeUnusedPackages($packagesList, $installDev)
     {
         $localRepo = $this->getLocalRepository();
         $installationManager = $this->composer->getInstallationManager();
@@ -160,7 +173,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-        $localRepo->write(true, $installationManager);
+        $localRepo->write($installDev, $installationManager);
     }
 
     /**
