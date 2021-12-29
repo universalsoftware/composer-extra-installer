@@ -11,8 +11,6 @@ use Composer\Script\Event;
 use Composer\Repository\InstalledFilesystemRepository;
 use Composer\DependencyResolver\Operation\InstallOperation;
 use Composer\DependencyResolver\Operation\UninstallOperation;
-use Composer\Downloader\FileDownloader;
-use Composer\Factory;
 
 /**
  * Class Plugin
@@ -25,8 +23,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 {
     protected $composer;
     protected $io;
-    protected $config;
-    protected $downloader;
 
     private $localRepo = null;
     private $repositoryManager = null;
@@ -38,11 +34,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $this->composer = $composer;
         $this->io = $io;
-        $this->config = $composer->getConfig();
-
-        $rfs = Factory::createHttpDownloader($this->io, $this->config);
-
-        $this->downloader = new FileDownloader($io, $this->config, $rfs);
     }
     
     /**
